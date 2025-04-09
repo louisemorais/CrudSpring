@@ -30,14 +30,14 @@ public class OrganizationService {
 
     public ResponseEntity saveOrganization(ResquestOrganizationDto dto) {
         var organizationss = new Organization();
-        BeanUtils.copyProperties(dto, organizationss);
+        BeanUtils.copyProperties(dto, organizationss, "id");
         return ResponseEntity.status(HttpStatus.CREATED).body(organizationRepository.save(organizationss));
     }
 
     public ResponseEntity updateOrganization(Long id, ResponseOrganizationDto dto) {
         Optional<Organization> idorganization = organizationRepository.findById(id);
         var organizationput = idorganization.get();
-        BeanUtils.copyProperties(dto, organizationput);
+        BeanUtils.copyProperties(dto, organizationput, "id");
         return ResponseEntity.status(HttpStatus.OK).body(organizationRepository.save(organizationput));
     }
 
