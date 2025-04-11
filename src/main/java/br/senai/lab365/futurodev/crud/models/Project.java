@@ -1,5 +1,7 @@
 package br.senai.lab365.futurodev.crud.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +27,8 @@ public class Project {
     private double cO2_Reduction_Estimate;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 }

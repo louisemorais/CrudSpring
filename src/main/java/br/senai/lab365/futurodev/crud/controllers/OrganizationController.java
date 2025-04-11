@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/organizations")
 public class OrganizationController {
 
+    /// refazer um pouco o controller com a dto e métodos do response entity
     @Autowired
     private OrganizationService organizationService;
 
