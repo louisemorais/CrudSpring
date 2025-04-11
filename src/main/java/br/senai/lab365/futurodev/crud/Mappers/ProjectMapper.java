@@ -26,4 +26,13 @@ public class ProjectMapper {
                                         ResponseProjectDto.getDescription(), ResponseProjectDto.getRegion(),
                                         ResponseProjectDto.getCO2_Reduction_Estimate(), ResponseProjectDto.getOrganization());
     }
+
+    public static ResponseProjectDto updateDto(RequestProjectDto dto, Project project){
+        project.setName(dto.name());
+        project.setDescription(dto.description());
+        project.setRegion(dto.region());
+        project.setCO2_Reduction_Estimate(dto.cO2_Reduction_Estimate());
+        project.setOrganization(dto.organization());
+                return toDto(project);
+    }
 }
