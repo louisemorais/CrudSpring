@@ -18,8 +18,6 @@ public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    //Rever aula para ver como fazer consultas
-
     //alterar o find all e ver formas melhores de fazer por enquanto seguir o professor
     public List<Project>findAll(){return projectRepository.findAll();}
 
@@ -53,7 +51,7 @@ public class ProjectService {
     //fazer validação
     public void deleteById(Long id){
         if (!projectRepository.existsById(id)){
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O "+id+" não foi encontrado.");
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O id "+id+" não foi encontrado.");
        }
         projectRepository.deleteById(id);
     }

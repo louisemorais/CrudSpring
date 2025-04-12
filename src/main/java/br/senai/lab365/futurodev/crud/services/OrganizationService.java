@@ -1,14 +1,20 @@
 package br.senai.lab365.futurodev.crud.services;
 
+import br.senai.lab365.futurodev.crud.Mappers.OrganizationMapper;
+import br.senai.lab365.futurodev.crud.Mappers.ProjectMapper;
+import br.senai.lab365.futurodev.crud.dtos.RequestProjectDto;
 import br.senai.lab365.futurodev.crud.dtos.ResponseOrganizationDto;
+import br.senai.lab365.futurodev.crud.dtos.ResponseProjectDto;
 import br.senai.lab365.futurodev.crud.dtos.ResquestOrganizationDto;
 import br.senai.lab365.futurodev.crud.models.Organization;
+import br.senai.lab365.futurodev.crud.models.Project;
 import br.senai.lab365.futurodev.crud.repositories.OrganizationRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,32 +24,39 @@ public class OrganizationService {
     @Autowired
     private OrganizationRepository organizationRepository;
 
-    public ResponseEntity getAllOrganizations() {
-        List<Organization> listorganizations = organizationRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(listorganizations);
+    public List<Organization> findAll(){return organizationRepository.findAll();}
+
+    public ResponseOrganizationDto findById(Long id) throws ResponseStatusException {
+        Optional<Organization> organizations= organizationRepository.findById(id);
+        if(organizations.isPresent()) {
+            Organization organization= organizations.get();
+            return OrganizationMapper.toDto(organization);
+        }if (organizations.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"O id "+id+" não foi encontrado.");
+        }
+        return null;
     }
 
-    public ResponseEntity getOrganizationById(Long id) {
-        Optional<Organization> idorganization = organizationRepository.findById(id);
-        return ResponseEntity.status(HttpStatus.FOUND).body(idorganization.get());
+    public ResponseOrganizationDto createPost (ResquestOrganizationDto dto){
+        Organization organization = OrganizationMapper.toEntity(dto);
+        organizationRepository.save(organization);
+        return OrganizationMapper.toDto(organization);
     }
 
-    public ResponseEntity saveOrganization(ResquestOrganizationDto dto) {
-        var organizationss = new Organization();
-        BeanUtils.copyProperties(dto, organizationss, "id");
-        return ResponseEntity.status(HttpStatus.CREATED).body(organizationRepository.save(organizationss));
+    public ResponseOrganizationDto update(Long id, ResquestOrganizationDto dto){
+        Optional<Organization> organizations= organizationRepository.findById(id);
+        if (organizations.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O "+id+" não foi encontrado.");
+        }
+        Organization allOrganization= organizations.get();
+        OrganizationMapper.update(dto,allOrganization);
+        return OrganizationMapper.toDto( organizationRepository.save(allOrganization));
     }
 
-    public ResponseEntity updateOrganization(Long id, ResponseOrganizationDto dto) {
-        Optional<Organization> idorganization = organizationRepository.findById(id);
-        var organizationput = idorganization.get();
-        BeanUtils.copyProperties(dto, organizationput, "id");
-        return ResponseEntity.status(HttpStatus.OK).body(organizationRepository.save(organizationput));
-    }
-
-    public ResponseEntity deleteOrganizationById(Long id) {
-        Optional<Organization> idorganization = organizationRepository.findById(id);
-        organizationRepository.delete(idorganization.get());
-        return ResponseEntity.status(HttpStatus.OK).body("organization deleted! id: " + id);
+    public void deleteById(Long id){
+        if (!organizationRepository.existsById(id)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O id "+id+" não foi encontrado.");
+        }
+        organizationRepository.deleteById(id);
     }
 }
