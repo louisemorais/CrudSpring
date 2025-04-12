@@ -1,42 +1,58 @@
 package br.senai.lab365.futurodev.crud.controllers;
 
+import br.senai.lab365.futurodev.crud.dtos.RequestProjectDto;
 import br.senai.lab365.futurodev.crud.dtos.ResponseOrganizationDto;
+import br.senai.lab365.futurodev.crud.dtos.ResponseProjectDto;
 import br.senai.lab365.futurodev.crud.dtos.ResquestOrganizationDto;
+import br.senai.lab365.futurodev.crud.models.Organization;
+import br.senai.lab365.futurodev.crud.models.Project;
 import br.senai.lab365.futurodev.crud.services.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/organizations")
 public class OrganizationController {
 
-    /// refazer um pouco o controller com a dto e métodos do response entity
     @Autowired
-    private OrganizationService organizationService;
+    private OrganizationService service;
 
     @GetMapping
-    public ResponseEntity getAll() {
-        return organizationService.getAllOrganizations();
+    public ResponseEntity<List<Organization>> getAll(){
+        return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getById(@PathVariable(value = "id") Long id) {
-        return organizationService.getOrganizationById(id);
+    public ResponseEntity<ResponseOrganizationDto> getById(@PathVariable(value = "id") Long id){
+        return ResponseEntity.status(HttpStatus.FOUND).body(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity save(@RequestBody ResquestOrganizationDto dto) {
-        return organizationService.saveOrganization(dto);
+    public ResponseEntity<ResponseOrganizationDto>post(@RequestBody ResquestOrganizationDto dto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createPost(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity update(@PathVariable(value = "id") Long id, @RequestBody ResponseOrganizationDto dto) {
-        return organizationService.updateOrganization(id, dto);
+    public ResponseEntity<ResponseOrganizationDto>updateById(@PathVariable(value = "id") Long id, @RequestBody ResquestOrganizationDto dto){
+        return ResponseEntity.status(HttpStatus.OK).body(service.update(id,dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteById(@PathVariable(value = "id") Long id) {
-        return organizationService.deleteOrganizationById(id);
+    public ResponseEntity deleteByid(@PathVariable(value = "id") Long id){
+        Map<String, String> response = new HashMap<>();
+        try {
+            service.deleteById(id);
+            response.put("mensagem", "Deletado com sucesso!");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch (Exception e){
+            response.put("mensagem", "id não encontrado! erro: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 }

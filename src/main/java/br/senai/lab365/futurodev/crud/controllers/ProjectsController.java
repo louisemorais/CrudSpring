@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -40,9 +41,15 @@ public class ProjectsController {
    }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteByid(@PathVariable(value = "id") Long id){
+    public ResponseEntity deleteByid(@PathVariable(value = "id") Long id){
+        Map<String, String> response = new HashMap<>();
+        try {
             service.deleteById(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Id deletado com sucesso!");
-
+            response.put("mensagem", "Deletado com sucesso!");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch (Exception e){
+            response.put("mensagem", "id não encontrado! erro: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+             }
     }
 }
