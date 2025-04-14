@@ -12,21 +12,27 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    //alterar o find all e ver formas melhores de fazer por enquanto seguir o professor
-    public List<Project>findAll(){return projectRepository.findAll();}
+    public List<ResponseProjectDto>findAll(String region){
+        if(region==null || region.isEmpty()){
+            return projectRepository.findAll().stream().map(project -> ProjectMapper.toDto(project)).toList();}
+         else {
+            return projectRepository.findByRegionContainingIgnoreCase(region).stream().map(project -> ProjectMapper.toDto(project)).toList();
+        }
+    }
+
 
     //ver formas melhores de fazer o find by id
     public ResponseProjectDto findById(Long id){
         Optional<Project> projects= projectRepository.findById(id);
         if(projects.isPresent()) {
-            Project project = projects.get();
-            return ProjectMapper.toDto(project);
+            return ProjectMapper.toDto(projects.get());
         }
         return null;
     }
@@ -41,17 +47,16 @@ public class ProjectService {
     public ResponseProjectDto update(Long id, RequestProjectDto dto){
         Optional<Project> projects= projectRepository.findById(id);
         if (projects.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O "+id+" não foi encontrado.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         Project allprojects= projects.get();
         ProjectMapper.updateDto(dto,allprojects);
         return ProjectMapper.toDto( projectRepository.save(allprojects));
     }
 
-    //fazer validação
     public void deleteById(Long id){
         if (!projectRepository.existsById(id)){
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O id "+id+" não foi encontrado.");
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND);
        }
         projectRepository.deleteById(id);
     }

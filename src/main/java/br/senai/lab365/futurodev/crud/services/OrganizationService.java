@@ -1,18 +1,12 @@
 package br.senai.lab365.futurodev.crud.services;
 
 import br.senai.lab365.futurodev.crud.Mappers.OrganizationMapper;
-import br.senai.lab365.futurodev.crud.Mappers.ProjectMapper;
-import br.senai.lab365.futurodev.crud.dtos.RequestProjectDto;
 import br.senai.lab365.futurodev.crud.dtos.ResponseOrganizationDto;
-import br.senai.lab365.futurodev.crud.dtos.ResponseProjectDto;
 import br.senai.lab365.futurodev.crud.dtos.ResquestOrganizationDto;
 import br.senai.lab365.futurodev.crud.models.Organization;
-import br.senai.lab365.futurodev.crud.models.Project;
 import br.senai.lab365.futurodev.crud.repositories.OrganizationRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,7 +18,13 @@ public class OrganizationService {
     @Autowired
     private OrganizationRepository organizationRepository;
 
-    public List<Organization> findAll(){return organizationRepository.findAll();}
+    public List<ResponseOrganizationDto> findAll(String name) {
+        if (name == null || name.isEmpty()) {
+            return organizationRepository.findAll().stream().map(organization -> OrganizationMapper.toDto(organization)).toList();
+        } else {
+            return organizationRepository.findByNameContainingIgnoreCase(name).stream().map(organization -> OrganizationMapper.toDto(organization)).toList();
+        }
+    }
 
     public ResponseOrganizationDto findById(Long id) throws ResponseStatusException {
         Optional<Organization> organizations= organizationRepository.findById(id);
