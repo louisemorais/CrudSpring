@@ -21,8 +21,8 @@ public class ProjectsController {
     private ProjectService service;
 
     @GetMapping
-    public ResponseEntity<List<Project>> getAll(){
-        return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
+    public ResponseEntity<List<ResponseProjectDto>> getAll(String region){
+        return ResponseEntity.status(HttpStatus.OK).body(service.findAll(region));
     }
 
     @GetMapping("/{id}")
@@ -42,14 +42,14 @@ public class ProjectsController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteByid(@PathVariable(value = "id") Long id){
-        Map<String, String> response = new HashMap<>();
+        //Map<String, String> response = new HashMap<>();
         try {
             service.deleteById(id);
-            response.put("mensagem", "Deletado com sucesso!");
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            //response.put("mensagem", "Deletado com sucesso!");
+            return ResponseEntity.status(HttpStatus.OK).body("Deletado com sucesso!");
         }catch (Exception e){
-            response.put("mensagem", "id não encontrado! erro: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            //response.put("mensagem", "id não encontrado! erro: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("id não encontrado! erro: " + e.getMessage());
              }
     }
 }
