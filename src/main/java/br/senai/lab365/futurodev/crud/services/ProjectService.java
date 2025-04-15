@@ -33,8 +33,9 @@ public class ProjectService {
         Optional<Project> projects= projectRepository.findById(id);
         if(projects.isPresent()) {
             return ProjectMapper.toDto(projects.get());
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return null;
     }
 
     //create post ta certo
