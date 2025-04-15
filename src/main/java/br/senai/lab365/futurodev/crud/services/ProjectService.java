@@ -23,12 +23,11 @@ public class ProjectService {
         if(region==null || region.isEmpty()){
             return projectRepository.findAll().stream().map(project -> ProjectMapper.toDto(project)).toList();}
          else {
-            return projectRepository.findByRegionContainingIgnoreCase(region).stream().map(project -> ProjectMapper.toDto(project)).toList();
+            return projectRepository.findByRegionContainingIgnoreCase(region).stream()
+                                    .map(project -> ProjectMapper.toDto(project)).toList();
         }
     }
 
-
-    //ver formas melhores de fazer o find by id
     public ResponseProjectDto findById(Long id){
         Optional<Project> projects= projectRepository.findById(id);
         if(projects.isPresent()) {
@@ -38,7 +37,6 @@ public class ProjectService {
         }
     }
 
-    //create post ta certo
     public ResponseProjectDto createPost (RequestProjectDto dto){
         Project project=ProjectMapper.toEntity(dto);
         projectRepository.save(project);

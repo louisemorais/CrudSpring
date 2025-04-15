@@ -20,21 +20,22 @@ public class OrganizationService {
 
     public List<ResponseOrganizationDto> findAll(String name) {
         if (name == null || name.isEmpty()) {
-            return organizationRepository.findAll().stream().map(organization -> OrganizationMapper.toDto(organization)).toList();
+            return organizationRepository.findAll().stream().map(organization ->
+                                          OrganizationMapper.toDto(organization)).toList();
         } else {
-            return organizationRepository.findByNameContainingIgnoreCase(name).stream().map(organization -> OrganizationMapper.toDto(organization)).toList();
+            return organizationRepository.findByNameContainingIgnoreCase(name).stream()
+                                         .map(organization -> OrganizationMapper.toDto(organization)).toList();
         }
     }
 
-    public ResponseOrganizationDto findById(Long id) throws ResponseStatusException {
+    public ResponseOrganizationDto findById(Long id){
         Optional<Organization> organizations= organizationRepository.findById(id);
         if(organizations.isPresent()) {
             Organization organization= organizations.get();
             return OrganizationMapper.toDto(organization);
-        }if (organizations.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"O id "+id+" não foi encontrado.");
+        }else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return null;
     }
 
     public ResponseOrganizationDto createPost (ResquestOrganizationDto dto){
@@ -55,7 +56,7 @@ public class OrganizationService {
 
     public void deleteById(Long id){
         if (!organizationRepository.existsById(id)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O id "+id+" não foi encontrado.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         organizationRepository.deleteById(id);
     }
